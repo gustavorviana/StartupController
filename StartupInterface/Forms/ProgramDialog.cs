@@ -93,11 +93,26 @@ namespace StartupInterface.Forms
             SetTime(dtpEntAt, times.End, DateTime.Now.AddMinutes(40));
             this.cbAutoClose.Checked = settings.ForceCloseAfterWorktime;
 
-            this.ClearIgnoredDays();
+            this.ignoredDates.Clear();
 
             if (settings.IgnoredDates != null)
-                foreach (var day in settings.IgnoredDates)
-                    this.AddIgnoredDay(day);
+                this.ignoredDates.AddRange(settings.IgnoredDates);
+
+            ReorderDates();
+        }
+
+        private void ReorderDates()
+        {
+            this.lbIgnoredDays.Items.Clear();
+            if (this.ignoredDates.Count < 1)
+                return;
+
+            this.ignoredDates.Sort();
+            string[] dates = new string[this.ignoredDates.Count];
+            for (int i = 0; i < dates.Length; i++)
+                dates[i] = ToFormat(this.ignoredDates[i]);
+
+            this.lbIgnoredDays.Items.AddRange(dates);
         }
 
         private void ApplyChanges()
@@ -185,28 +200,6 @@ namespace StartupInterface.Forms
 
         #endregion
 
-        #region IgnoreOperations
-
-        public void AddIgnoredDay(DateTime date)
-        {
-            this.ignoredDates.Add(date);
-            this.lbIgnoredDays.Items.Add(ToFormat(date));
-        }
-
-        public void RemoveIgnoredDay(int index)
-        {
-            this.ignoredDates.RemoveAt(index);
-            this.lbIgnoredDays.Items.RemoveAt(index);
-        }
-
-        public void ClearIgnoredDays()
-        {
-            this.ignoredDates.Clear();
-            this.lbIgnoredDays.Items.Clear();
-        }
-
-        #endregion
-
         #region Events
 
         private void lbIgnoredDays_KeyUp(object sender, KeyEventArgs e)
@@ -225,21 +218,30 @@ namespace StartupInterface.Forms
             if (MessageBox.Show(message, "Remover data da lista de ignorados", MessageBoxButtons.YesNo) != DialogResult.Yes)
                 return;
 
-            this.RemoveIgnoredDay(index);
+            //Remove date
+            this.ignoredDates.RemoveAt(index);
+            this.lbIgnoredDays.Items.RemoveAt(index);
         }
 
         private void llAdd_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (!(IgnoreDialog.ShowIgnoreDialog() is DateTime date))
+            if (IgnoreDialog.ShowIgnoreDialog() is not DateTime date)
                 return;
 
-            if (this.ignoredDates.Any(ig => ig.EqualsDate(date)))
+            if (this.ignoredDates.Any(ig => ig.Date == date.Date))
             {
                 MessageBox.Show("Esta data já foi adicionada anteriormente!");
+
+                //Seleciona a data adicionada
+                this.lbIgnoredDays.SelectedIndex = this.ignoredDates.IndexOf(date);
                 return;
             }
 
-            this.AddIgnoredDay(date);
+            this.ignoredDates.Add(date);
+            this.ReorderDates();
+
+            //Seleciona a data adicionada
+            this.lbIgnoredDays.SelectedIndex = this.ignoredDates.IndexOf(date);
         }
 
         private void btSave_Click(object sender, EventArgs e)
@@ -247,13 +249,12 @@ namespace StartupInterface.Forms
             try
             {
                 this.CheckSettings();
+                this.DialogResult = DialogResult.OK;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Configuração inválida!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return;
             }
-            this.DialogResult = DialogResult.OK;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -289,7 +290,6 @@ namespace StartupInterface.Forms
             if (fbd.ShowDialog() == DialogResult.OK)
                 this.txtProgramPath.Text = fbd.SelectedPath;
         }
-
 
         #endregion
     }

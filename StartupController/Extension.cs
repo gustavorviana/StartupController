@@ -28,17 +28,6 @@ namespace StartupControllerApp
         }
 
         /// <summary>
-        /// Checks whether only the dates are the same, ignoring whether they are in UTF or not.
-        /// </summary>
-        /// <param name="date1">Date one.</param>
-        /// <param name="date2">Date two.</param>
-        /// <returns></returns>
-        public static bool EqualsDate(this DateTime date1, DateTime date2)
-        {
-            return date1.Year == date2.Year && date1.Month == date2.Month && date1.Day == date2.Day;
-        }
-
-        /// <summary>
         /// Sets the string character to uppercase.
         /// </summary>
         /// <param name="value">String.</param>

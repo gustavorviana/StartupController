@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StartupControllerApp;
+using System;
 using System.Windows.Forms;
 
 namespace StartupInterface.Forms
@@ -30,7 +31,7 @@ namespace StartupInterface.Forms
 
         private void btnOk_Click(object sender, EventArgs e)
         {
-            if (this.SelectedDate < DateTime.Now)
+            if (this.SelectedDate < DateTime.Now.Date)
             {
                 MessageBox.Show("A data selecionada precisa ser maior ou igual a atual!");
                 return;

@@ -87,7 +87,6 @@ namespace StartupInterface
             return pipeSecurity;
         }
 
-
         internal static void RunFatalAction(Exception ex)
         {
             string message = "Ocorreu um erro inesperado e o aplicativo teve que ser encerrado.";

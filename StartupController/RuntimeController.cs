@@ -45,7 +45,8 @@ namespace StartupControllerApp
             if (this.IgnoredDates == null)
                 return false;
 
-            return this.IgnoredDates.Any(ignored => ignored.EqualsDate(date));
+            //Verifica se apenas o dia/mês/ano são iguais
+            return this.IgnoredDates.Any(ignored => ignored.Date == date.Date);
         }
 
         /// <summary>

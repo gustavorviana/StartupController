@@ -18,6 +18,7 @@ namespace StartupControllerApp
         public event EventHandler<AppEventArgs> OnConfigChanged;
         public event EventHandler<AppStateEventArgs> OnStateChanged;
         public event EventHandler<AppErrorEventArgs> OnError;
+        public event EventHandler<AppEndWorkEventArgs> OnEndWork;
 
         #endregion
 
@@ -125,8 +126,14 @@ namespace StartupControllerApp
                                 !app.Settings.ForceCloseAfterWorktime || app.StartTime == null || app.StartedOutOfWorktime)
                                 continue;
 
-                            app.Close();
+                            var args = new AppEndWorkEventArgs(app, false);
 
+                            this.OnEndWork?.Invoke(this, args);
+
+                            if (args.IsCancelled)
+                                continue;
+
+                            app.Close();
                         }
                         Thread.Sleep(schedulerDelay);
                     }

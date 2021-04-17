@@ -172,7 +172,7 @@ namespace StartupInterface.Forms
                 return;
 
             var dates = app.Settings.IgnoredDates ?? Array.Empty<DateTime>();
-            if (dates.Any(ig => ig.EqualsDate(date)))
+            if (dates.Any(ig => ig.Date == date.Date))
             {
                 MessageBox.Show("Esta data já foi adicionada anteriormente!");
                 return;
@@ -181,6 +181,8 @@ namespace StartupInterface.Forms
             Array.Resize(ref dates, dates.Length + 1);
             dates[^1] = date;
 
+            Array.Sort(dates);
+            app.Settings.IgnoredDates = dates;
             this.Controller.UpdateSettings(app);
         }
 
